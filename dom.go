@@ -25,7 +25,7 @@ func (*NS) Parent() Parent {
 	return nil
 }
 
-func (*NS) SetParent(p Parent) {}
+func (*NS) SetParent(Parent) {}
 
 type Name struct {
 	*NS
@@ -97,7 +97,7 @@ func (*Attr) Parent() Parent {
 	return nil
 }
 
-func (*Attr) SetParent(p Parent) {}
+func (*Attr) SetParent(Parent) {}
 
 type Element struct {
 	ParentNode Parent
@@ -162,7 +162,7 @@ func (*Document) Parent() Parent {
 	return nil
 }
 
-func (*Document) SetParent(p Parent) {}
+func (*Document) SetParent(Parent) {}
 
 func (d *Document) Append(child Node) error {
 	switch child.(type) {
@@ -192,3 +192,15 @@ func (d *Document) RootElement() *Element {
 	}
 	return nil
 }
+
+type NameSpace struct {
+	ParentNode Parent
+	Prefix     string
+	URI        string
+}
+
+func (*NameSpace) Parent() Parent {
+	return nil
+}
+
+func (n *NameSpace) SetParent(Parent) {}
