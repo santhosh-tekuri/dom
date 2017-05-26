@@ -154,6 +154,15 @@ func (e *Element) resolvePrefix(prefix string) (string, bool) {
 	return "", prefix == ""
 }
 
+func (e *Element) GetAttr(uri, local string) *Attr {
+	for _, attr := range e.Attrs {
+		if attr.URI == uri && attr.Local == local {
+			return attr
+		}
+	}
+	return nil
+}
+
 type Document struct {
 	ChildNodes []Node
 }
