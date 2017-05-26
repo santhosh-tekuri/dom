@@ -32,9 +32,9 @@ func Unmarshal(decoder *xml.Decoder) (*Document, error) {
 			cur = elem
 			for _, a := range t.Attr {
 				if a.Name.Space == "xmlns" {
-					elem.NSDecl = append(elem.NSDecl, &NS{a.Name.Local, a.Value})
+					elem.declareNS(a.Name.Local, a.Value)
 				} else if a.Name.Space == "" && a.Name.Local == "xmlns" {
-					elem.NSDecl = append(elem.NSDecl, &NS{"", a.Value})
+					elem.declareNS("", a.Value)
 				}
 			}
 			elem.Name = translate(elem, t.Name)

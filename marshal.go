@@ -29,15 +29,15 @@ func (p *printer) printNode(n Node) {
 	case *Element:
 		p.WriteByte('<')
 		p.printName(n.Name)
-		for _, ns := range n.NSDecl {
+		for prefix, uri := range n.NSDecl {
 			p.WriteByte(' ')
 			p.WriteString("xmlns")
-			if ns.Prefix != "" {
+			if prefix != "" {
 				p.WriteByte(':')
-				p.WriteString(ns.Prefix)
+				p.WriteString(prefix)
 			}
 			p.WriteByte('=')
-			p.printValue(ns.URI)
+			p.printValue(uri)
 		}
 		for _, attr := range n.Attrs {
 			p.WriteByte(' ')

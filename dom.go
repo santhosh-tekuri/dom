@@ -102,7 +102,7 @@ func (*Attr) SetParent(p Parent) {}
 type Element struct {
 	ParentNode Parent
 	*Name
-	NSDecl     []*NS
+	NSDecl     map[string]string
 	Attrs      []*Attr
 	ChildNodes []Node
 }
@@ -130,15 +130,20 @@ func (e *Element) Children() []Node {
 	return e.ChildNodes
 }
 
+func (e *Element) declareNS(prefix, uri string) {
+	if e.NSDecl == nil {
+		e.NSDecl = make(map[string]string)
+	}
+	e.NSDecl[prefix] = uri
+}
+
 func (e *Element) resolvePrefix(prefix string) (string, bool) {
 	if prefix == "xml" {
 		return "http://www.w3.org/XML/1998/namespace", true
 	}
 	for {
-		for _, ns := range e.NSDecl {
-			if prefix == ns.Prefix {
-				return ns.URI, true
-			}
+		if uri, ok := e.NSDecl[prefix]; ok {
+			return uri, true
 		}
 		if _, ok := e.Parent().(*Element); ok {
 			e = e.Parent().(*Element)
