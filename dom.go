@@ -39,7 +39,7 @@ func (n *Name) String() string {
 	return fmt.Sprintf("%s:%s", n.Prefix, n.Local)
 }
 
-// A ParentNode is an interface holding one of the types:
+// A Parent is an interface holding one of the types:
 // *Document or *Element.
 type Parent interface {
 	Node

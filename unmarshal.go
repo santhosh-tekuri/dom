@@ -89,7 +89,7 @@ func Unmarshal(decoder *xml.Decoder) (*Document, error) {
 			}
 		case xml.ProcInst:
 			if cur == d && t.Target == "xml" {
-				break // dont add xml decleration to document
+				break // don't add xml declaration to document
 			}
 			n := &ProcInst{Target: t.Target, Data: string(t.Inst)}
 			if err = cur.Append(n); err != nil {
