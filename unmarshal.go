@@ -67,7 +67,7 @@ func Unmarshal(decoder *xml.Decoder) (*Document, error) {
 				elem = nil
 			}
 		case xml.CharData:
-			if cur==elem {
+			if cur == elem {
 				if len(elem.Children()) > 0 {
 					last := elem.Children()[len(elem.Children())-1]
 					if text, ok := last.(*Text); ok {
@@ -88,7 +88,7 @@ func Unmarshal(decoder *xml.Decoder) (*Document, error) {
 				return nil, err
 			}
 		case xml.ProcInst:
-			if cur==d && t.Target=="xml" {
+			if cur == d && t.Target == "xml" {
 				break // dont add xml decleration to document
 			}
 			n := &ProcInst{Target: t.Target, Data: string(t.Inst)}

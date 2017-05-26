@@ -116,7 +116,7 @@ func (e *Element) SetParent(p Parent) {
 }
 
 func (e *Element) Append(child Node) error {
-	switch child.(type){
+	switch child.(type) {
 	case *Element, *Text, *Comment, *ProcInst:
 		e.ChildNodes = append(e.ChildNodes, child)
 		child.SetParent(e)
