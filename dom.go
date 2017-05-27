@@ -203,9 +203,9 @@ func (d *Document) RootElement() *Element {
 }
 
 type NameSpace struct {
-	ParentNode Parent
-	Prefix     string
-	URI        string
+	Owner  *Element
+	Prefix string
+	URI    string
 }
 
 func (*NameSpace) Parent() Parent {
