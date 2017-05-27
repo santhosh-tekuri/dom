@@ -16,20 +16,10 @@ type Node interface {
 	SetParent(p Parent)
 }
 
-type NS struct {
-	Prefix string
-	URI    string
-}
-
-func (*NS) Parent() Parent {
-	return nil
-}
-
-func (*NS) SetParent(Parent) {}
-
 type Name struct {
-	*NS
-	Local string
+	URI    string
+	Prefix string
+	Local  string
 }
 
 func (n *Name) String() string {

@@ -47,7 +47,7 @@ func Unmarshal(decoder *xml.Decoder) (*Document, error) {
 				}
 				var name *Name
 				if a.Name.Space == "" {
-					name = &Name{&NS{"", ""}, a.Name.Local}
+					name = &Name{"", "", a.Name.Local}
 				} else {
 					name = translate(elem, a.Name)
 					if name == nil {
@@ -101,7 +101,7 @@ func Unmarshal(decoder *xml.Decoder) (*Document, error) {
 
 func translate(e *Element, name xml.Name) *Name {
 	if uri, ok := e.resolvePrefix(name.Space); ok {
-		return &Name{&NS{name.Space, uri}, name.Local}
+		return &Name{uri, name.Space, name.Local}
 	}
 	return nil
 }
