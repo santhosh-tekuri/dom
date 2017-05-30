@@ -54,7 +54,7 @@ func Unmarshal(decoder *xml.Decoder) (*Document, error) {
 						return nil, errors.New("unresolved prefix: " + a.Name.Space)
 					}
 				}
-				elem.Attrs = append(elem.Attrs, &Attr{elem, name, a.Value})
+				elem.Attrs = append(elem.Attrs, &Attr{elem, name, a.Value, "CDATA"})
 			}
 		case xml.EndElement:
 			if elem.Prefix != t.Name.Space || elem.Local != t.Name.Local {

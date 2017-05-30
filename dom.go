@@ -81,6 +81,7 @@ type Attr struct {
 	Owner *Element
 	*Name
 	Value string
+	Type string
 }
 
 func (*Attr) Parent() Parent {
