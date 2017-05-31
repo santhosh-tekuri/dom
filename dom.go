@@ -81,7 +81,7 @@ type Attr struct {
 	Owner *Element
 	*Name
 	Value string
-	Type string
+	Type  string
 }
 
 func (*Attr) Parent() Parent {
@@ -204,3 +204,21 @@ func (*NameSpace) Parent() Parent {
 }
 
 func (n *NameSpace) SetParent(Parent) {}
+
+// OwnerDocument returns The Document object associated with given node.
+func OwnerDocument(n Node) *Document {
+	for n != nil {
+		if d, ok := n.(*Document); ok {
+			return d
+		}
+		switch x := n.(type) {
+		case *Attr:
+			n = x.Owner
+		case *NameSpace:
+			n = x.Owner
+		default:
+			n = x.Parent()
+		}
+	}
+	return nil
+}
