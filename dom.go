@@ -205,20 +205,28 @@ func (*NameSpace) Parent() Parent {
 
 func (n *NameSpace) SetParent(Parent) {}
 
+// Owner returns the node who owns the node
+//
+// for *Attr and *Namespace it returns Owner field,
+// for others it returns their parent Node
+func Owner(n Node) Node {
+	switch n := n.(type) {
+	case *Attr:
+		return n.Owner
+	case *NameSpace:
+		return n.Owner
+	default:
+		return n.Parent()
+	}
+}
+
 // OwnerDocument returns The Document object associated with given node.
 func OwnerDocument(n Node) *Document {
 	for n != nil {
 		if d, ok := n.(*Document); ok {
 			return d
 		}
-		switch x := n.(type) {
-		case *Attr:
-			n = x.Owner
-		case *NameSpace:
-			n = x.Owner
-		default:
-			n = x.Parent()
-		}
+		n = Owner(n)
 	}
 	return nil
 }
