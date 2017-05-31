@@ -10,7 +10,7 @@ import (
 )
 
 // A Node is an interface holding one of the types:
-// *Document, *Element, *Text, *Comment, *ProcInst, *Attr or *NS.
+// *Document, *Element, *Text, *Comment, *ProcInst, *Attr or *Namespace.
 type Node interface {
 	Parent() Parent
 	SetParent(p Parent)
