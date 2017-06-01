@@ -10,6 +10,7 @@ import (
 	"io"
 )
 
+// Marshal writes the XML encoding of d into w.
 func Marshal(w io.Writer, d *Document) error {
 	p := &printer{bufio.NewWriter(w)}
 	p.printNode(d)

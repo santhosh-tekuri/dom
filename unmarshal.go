@@ -12,6 +12,8 @@ import (
 	"strings"
 )
 
+// Unmarshal reads tokens from decoder and constructs
+// Document object.
 func Unmarshal(decoder *xml.Decoder) (*Document, error) {
 	d := new(Document)
 	var cur Parent = d
@@ -100,7 +102,7 @@ func Unmarshal(decoder *xml.Decoder) (*Document, error) {
 }
 
 func translate(e *Element, name xml.Name) *Name {
-	if uri, ok := e.resolvePrefix(name.Space); ok {
+	if uri, ok := e.ResolvePrefix(name.Space); ok {
 		return &Name{uri, name.Space, name.Local}
 	}
 	return nil

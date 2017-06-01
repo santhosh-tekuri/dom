@@ -16,12 +16,14 @@ type Node interface {
 	SetParent(p Parent)
 }
 
+// A Name represents an XML name.
 type Name struct {
 	URI    string
 	Prefix string
 	Local  string
 }
 
+// String returns qualified name
 func (n *Name) String() string {
 	if n.Prefix == "" {
 		return n.Local
@@ -37,6 +39,9 @@ type Parent interface {
 	Children() []Node
 }
 
+// A Text represents XML character data (raw text),
+// in which XML escape sequences have been replaced by
+// the characters they represent.
 type Text struct {
 	ParentNode Parent
 	Data       string
@@ -50,6 +55,8 @@ func (t *Text) SetParent(p Parent) {
 	t.ParentNode = p
 }
 
+// A Comment represents an XML comment of the form <!--comment-->.
+// The bytes do not include the <!-- and --> comment markers.
 type Comment struct {
 	ParentNode Parent
 	Data       string
@@ -63,6 +70,7 @@ func (c *Comment) SetParent(p Parent) {
 	c.ParentNode = p
 }
 
+// A ProcInst represents an XML processing instruction of the form <?target data?>
 type ProcInst struct {
 	ParentNode Parent
 	Target     string
@@ -77,6 +85,7 @@ func (pi *ProcInst) SetParent(p Parent) {
 	pi.ParentNode = p
 }
 
+// An Attr represents an attribute in an XML element (Name=Value).
 type Attr struct {
 	Owner *Element
 	*Name
@@ -90,6 +99,7 @@ func (*Attr) Parent() Parent {
 
 func (*Attr) SetParent(Parent) {}
 
+// An Element represents an XML element.
 type Element struct {
 	ParentNode Parent
 	*Name
@@ -128,7 +138,9 @@ func (e *Element) declareNS(prefix, uri string) {
 	e.NSDecl[prefix] = uri
 }
 
-func (e *Element) resolvePrefix(prefix string) (string, bool) {
+// ResolvePrefix returns the URI bound to given prefix.
+// The second return value tells whether prefix is bound or not.
+func (e *Element) ResolvePrefix(prefix string) (string, bool) {
 	if prefix == "xml" {
 		return "http://www.w3.org/XML/1998/namespace", true
 	}
@@ -145,6 +157,8 @@ func (e *Element) resolvePrefix(prefix string) (string, bool) {
 	return "", prefix == ""
 }
 
+// GetAttr returns the attribute with given uri and local.
+// It returns null, if attribute is not found.
 func (e *Element) GetAttr(uri, local string) *Attr {
 	for _, attr := range e.Attrs {
 		if attr.URI == uri && attr.Local == local {
@@ -154,6 +168,7 @@ func (e *Element) GetAttr(uri, local string) *Attr {
 	return nil
 }
 
+// A Document represents XML Document.
 type Document struct {
 	ChildNodes []Node
 }
@@ -184,6 +199,7 @@ func (d *Document) Children() []Node {
 	return d.ChildNodes
 }
 
+// RootElement returns the root element of the document
 func (d *Document) RootElement() *Element {
 	for _, c := range d.ChildNodes {
 		if e, ok := c.(*Element); ok {
@@ -193,6 +209,8 @@ func (d *Document) RootElement() *Element {
 	return nil
 }
 
+// A NameSpace represents namespace node.
+// This is only used by xpath engines.
 type NameSpace struct {
 	Owner  *Element
 	Prefix string
