@@ -19,7 +19,7 @@ func Example() {
     <name>Santhosh Kumar Tekuri</name>
     <email>santhosh.tekuri@gmail.com</email>
 </developer>
-	`
+`
 
 	doc, err := dom.Unmarshal(xml.NewDecoder(strings.NewReader(str)))
 	if err != nil {
