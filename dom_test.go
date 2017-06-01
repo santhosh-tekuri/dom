@@ -27,7 +27,7 @@ func TestIdentity(t *testing.T) {
 			continue
 		}
 		buf := new(bytes.Buffer)
-		if err := dom.Marshal(buf, d); err != nil {
+		if err := dom.Marshal(d, buf); err != nil {
 			t.Errorf("#%d: %s", i, err)
 		}
 		if s := buf.String(); s != test {
@@ -43,7 +43,7 @@ func TestNormalized(t *testing.T) {
 		{`<?xml version="1.0" encoding="UTF-8" standalone="no" ?><test/>`, `<test/>`},
 		{` <a/>`, `<a/>`},
 		{`<e a='v'/>`, `<e a="v"/>`},
-		{`<e a='v"'/>`, `<e a="v&#34;"/>`},
+		{`<e a='v"'/>`, `<e a="v&quot;"/>`},
 		{`<a>one<![CDATA[two]]>three<![CDATA[four]]>five</a>`, `<a>onetwothreefourfive</a>`},
 	}
 	for i, test := range tests {
@@ -53,7 +53,7 @@ func TestNormalized(t *testing.T) {
 			return
 		}
 		buf := new(bytes.Buffer)
-		if err := dom.Marshal(buf, d); err != nil {
+		if err := dom.Marshal(d, buf); err != nil {
 			t.Errorf("#%d: %s", i, err)
 		}
 		if s := buf.String(); s != test.normalized {
