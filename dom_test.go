@@ -21,6 +21,10 @@ func TestIdentity(t *testing.T) {
 		`<x:one xmlns:x="ns1"><x:two/></x:one>`,
 		`<x><!--ignore me--></x>`,
 		`<x><?abcd hello world?></x>`,
+		`<e a="v&amp;"/>`,
+		`<e a="a&lt;b"/>`,
+		`<e a="a&gt;b"/>`,
+		"<e>\n</e>",
 	}
 	for i, test := range tests {
 		d, err := dom.Unmarshal(xml.NewDecoder(strings.NewReader(test)))
@@ -46,6 +50,8 @@ func TestNormalized(t *testing.T) {
 		{` <a/>`, `<a/>`},
 		{`<e a='v'/>`, `<e a="v"/>`},
 		{`<e a='v"'/>`, `<e a="v&quot;"/>`},
+		{`<e a="v'"/>`, `<e a="v&apos;"/>`},
+		{"<e>\t</e>", `<e>&#x9;</e>`},
 		{`<a>one<![CDATA[two]]>three<![CDATA[four]]>five</a>`, `<a>onetwothreefourfive</a>`},
 	}
 	for i, test := range tests {
@@ -59,7 +65,7 @@ func TestNormalized(t *testing.T) {
 			t.Errorf("#%d: %s", i, err)
 		}
 		if s := buf.String(); s != test.normalized {
-			t.Errorf("expected:\n%s\nbut got:\n%s\n", test.normalized, s)
+			t.Errorf("#%d: expected:\n%s\nbut got:\n%s\n", i, test.normalized, s)
 		}
 	}
 }

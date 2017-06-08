@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	esc_quot = []byte("&quot;") // shorter than "&quot;"
-	esc_apos = []byte("&apos;") // shorter than "&apos;"
+	esc_quot = []byte("&quot;")
+	esc_apos = []byte("&apos;")
 	esc_amp  = []byte("&amp;")
 	esc_lt   = []byte("&lt;")
 	esc_gt   = []byte("&gt;")
