@@ -83,26 +83,17 @@ func Unmarshal(decoder *xml.Decoder) (*Document, error) {
 						break
 					}
 				}
-				n := &Text{Data: string(t)}
-				if err = cur.Append(n); err != nil {
-					return nil, err
-				}
+				_ = cur.Append(&Text{Data: string(t)})
 			} else if len(strings.TrimSpace(string(t))) > 0 {
 				return nil, errors.New("child of type *dom.Text is not allowed in *dom.Document")
 			}
 		case xml.Comment:
-			n := &Comment{Data: string(t)}
-			if err = cur.Append(n); err != nil {
-				return nil, err
-			}
+			_ = cur.Append(&Comment{Data: string(t)})
 		case xml.ProcInst:
 			if cur == d && t.Target == "xml" {
 				break // don't add xml declaration to document
 			}
-			n := &ProcInst{Target: t.Target, Data: string(t.Inst)}
-			if err = cur.Append(n); err != nil {
-				return nil, err
-			}
+			_ = cur.Append(&ProcInst{Target: t.Target, Data: string(t.Inst)})
 		}
 	}
 }

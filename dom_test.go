@@ -19,6 +19,8 @@ func TestIdentity(t *testing.T) {
 		`<x:test xmlns:x="ns1" x:a1="v1" a2="v2"/>`,
 		`<test xmlns="ns1" a1="v1" a2="v2"/>`,
 		`<x:one xmlns:x="ns1"><x:two/></x:one>`,
+		`<x><!--ignore me--></x>`,
+		`<x><?abcd hello world?></x>`,
 	}
 	for i, test := range tests {
 		d, err := dom.Unmarshal(xml.NewDecoder(strings.NewReader(test)))
