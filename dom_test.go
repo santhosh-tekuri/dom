@@ -66,14 +66,15 @@ func TestNormalized(t *testing.T) {
 
 func TestInvalidXML(t *testing.T) {
 	tests := []string{
-		``,                  // no root element
-		`<e1`,               // incomplete start element
-		`<e1>`,              // missing end element
-		`<e1/><e2/>`,        // more than one root element
-		`<ns1:e1/>`,         // unresolved element prefix
-		`<e1 ns1:p1="v1"/>`, // unresolved attribute prefix
-		`<e1>hai</e2>`,      // wrong end element
-		`hai<e1/>`,          // text outside root element
+		``,                      // no root element
+		`<e1`,                   // incomplete start element
+		`<e1>`,                  // missing end element
+		`<e1/><e2/>`,            // more than one root element
+		`<ns1:e1/>`,             // unresolved element prefix
+		`<e1 ns1:p1="v1"/>`,     // unresolved attribute prefix
+		`<ns1:x xmlns:ns1=""/>`, // empty namespace bound to prefix
+		`<e1>hai</e2>`,          // wrong end element
+		`hai<e1/>`,              // text outside root element
 	}
 
 	for i, test := range tests {

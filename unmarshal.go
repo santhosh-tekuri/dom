@@ -40,6 +40,9 @@ func Unmarshal(decoder *xml.Decoder) (*Document, error) {
 			cur = elem
 			for _, a := range t.Attr {
 				if a.Name.Space == "xmlns" {
+					if a.Value == "" {
+						return nil, errors.New("empty namespace is not allowed")
+					}
 					elem.declareNS(a.Name.Local, a.Value)
 				} else if a.Name.Space == "" && a.Name.Local == "xmlns" {
 					elem.declareNS("", a.Value)
