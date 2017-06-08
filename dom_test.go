@@ -50,7 +50,7 @@ func TestNormalized(t *testing.T) {
 		d, err := dom.Unmarshal(xml.NewDecoder(strings.NewReader(test.raw)))
 		if err != nil {
 			t.Errorf("#%d: %s", i, err)
-			return
+			continue
 		}
 		buf := new(bytes.Buffer)
 		if err := dom.Marshal(d, buf); err != nil {
@@ -58,6 +58,28 @@ func TestNormalized(t *testing.T) {
 		}
 		if s := buf.String(); s != test.normalized {
 			t.Errorf("expected:\n%s\nbut got:\n%s\n", test.normalized, s)
+		}
+	}
+}
+
+func TestInvalidXML(t *testing.T) {
+	tests := []string{
+		``,                  // no root element
+		`<e1`,               // incomplete start element
+		`<e1>`,              // missing end element
+		`<e1/><e2/>`,        // more than one root element
+		`<ns1:e1/>`,         // unresolved element prefix
+		`<e1 ns1:p1="v1"/>`, // unresolved attribute prefix
+		`<e1>hai</e2>`,      // wrong end element
+		`hai<e1/>`,          // text outside root element
+	}
+
+	for i, test := range tests {
+		if _, err := dom.Unmarshal(xml.NewDecoder(strings.NewReader(test))); err == nil {
+			t.Errorf("#%d: error expected", i)
+			continue
+		} else {
+			t.Logf("#%d: %v", i, err)
 		}
 	}
 }

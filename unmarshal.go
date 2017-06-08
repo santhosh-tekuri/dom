@@ -21,6 +21,12 @@ func Unmarshal(decoder *xml.Decoder) (*Document, error) {
 	for {
 		t, err := decoder.RawToken()
 		if err == io.EOF {
+			switch {
+			case elem != nil:
+				return nil, fmt.Errorf("expected </%s>", elem.Name)
+			case d.RootElement() == nil:
+				return nil, errors.New("document is empty")
+			}
 			return d, nil
 		} else if err != nil {
 			return d, err
