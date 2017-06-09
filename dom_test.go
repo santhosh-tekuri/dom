@@ -52,6 +52,8 @@ func TestNormalized(t *testing.T) {
 		{`<e a='v"'/>`, `<e a="v&quot;"/>`},
 		{`<e a="v'"/>`, `<e a="v&apos;"/>`},
 		{"<e>\t</e>", `<e>&#x9;</e>`},
+		{"<e>&#xD;</e>", `<e>&#xD;</e>`},
+		{"<e a='&#xA;'/>", `<e a="&#xA;"/>`},
 		{`<a>one<![CDATA[two]]>three<![CDATA[four]]>five</a>`, `<a>onetwothreefourfive</a>`},
 	}
 	for i, test := range tests {
