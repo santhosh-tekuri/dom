@@ -25,6 +25,7 @@ func TestIdentity(t *testing.T) {
 		`<e a="a&lt;b"/>`,
 		`<e a="a&gt;b"/>`,
 		"<e>\n</e>",
+		`<e xml:lang="en-us">\n</e>`,
 	}
 	for i, test := range tests {
 		d, err := dom.Unmarshal(xml.NewDecoder(strings.NewReader(test)))
