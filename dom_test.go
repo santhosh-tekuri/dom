@@ -20,7 +20,9 @@ func TestIdentity(t *testing.T) {
 		`<test xmlns="ns1" a1="v1" a2="v2"/>`,
 		`<x:one xmlns:x="ns1"><x:two/></x:one>`,
 		`<x><!--ignore me--></x>`,
+		`<!--ignore me--><x/>`,
 		`<x><?abcd hello world?></x>`,
+		`<?abcd hello world?><x/>`,
 		`<e a="v&amp;"/>`,
 		`<e a="a&lt;b"/>`,
 		`<e a="a&gt;b"/>`,
@@ -75,23 +77,41 @@ func TestNormalized(t *testing.T) {
 
 func TestInvalidXML(t *testing.T) {
 	tests := []string{
-		``,                      // no root element
-		`<e1`,                   // incomplete start element
-		`<e1>`,                  // missing end element
-		`<e1/><e2/>`,            // more than one root element
-		`<ns1:e1/>`,             // unresolved element prefix
-		`<e1 ns1:p1="v1"/>`,     // unresolved attribute prefix
-		`<ns1:x xmlns:ns1=""/>`, // empty namespace bound to prefix
-		`<e1>hai</e2>`,          // wrong end element
-		`hai<e1/>`,              // text outside root element
+		``,                                             // no root element
+		`<e1`,                                          // incomplete start element
+		`<e1>`,                                         // missing end element
+		`<e1/><e2/>`,                                   // more than one root element
+		`<ns1:e1/>`,                                    // unresolved element prefix
+		`<e1 ns1:p1="v1"/>`,                            // unresolved attribute prefix
+		`<ns1:x xmlns:ns1=""/>`,                        // empty namespace bound to prefix
+		`<e1>hai</e2>`,                                 // wrong end element
+		`<x:e xmlns:x="x" xmlns:y="x"></y:e>`,          // wrong prefix in end element
+		`hai<e1/>`,                                     // text outside root element
+		`<e a="v" a="v"/>`,                             // duplicate attribute
+		`<e xmlns:x="x" xmlns:y="x" x:a="v" y:a="v"/>`, // duplicate attribute
+		`<!--comment--xyz--><e1/>`,                     // "--" not allowed in comments
 	}
 
 	for i, test := range tests {
 		if _, err := dom.Unmarshal(xml.NewDecoder(strings.NewReader(test))); err == nil {
-			t.Errorf("#%d: error expected", i)
+			t.Errorf("#%d: FAIL: error expected", i)
 			continue
 		} else {
 			t.Logf("#%d: %v", i, err)
+		}
+	}
+}
+
+func TestDefaultNamespace(t *testing.T) {
+	doc, err := dom.Unmarshal(xml.NewDecoder(strings.NewReader(`<e xmlns="x" a="v"/>`)))
+	if err != nil {
+		t.Error(err)
+	} else {
+		if doc.RootElement().URI != "x" {
+			t.Errorf("root namesame: got %q, want %q", doc.RootElement().URI, "x")
+		}
+		if doc.RootElement().Attrs[0].URI != "" {
+			t.Errorf("attribute namesame: got %q, want %q", doc.RootElement().Attrs[0].URI, "")
 		}
 	}
 }

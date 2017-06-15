@@ -62,6 +62,12 @@ func Unmarshal(decoder *xml.Decoder) (*Document, error) {
 				} else if name, err = translate(elem, a.Name); err != nil {
 					return nil, err
 				}
+				if elem.GetAttr(name.URI, name.Local) != nil {
+					if name.URI == "" {
+						return nil, fmt.Errorf("duplicate attribute %s", name.Local)
+					}
+					return nil, fmt.Errorf("duplicate attribute {%s}%s", name.URI, name.Local)
+				}
 				elem.Attrs = append(elem.Attrs, &Attr{elem, name, a.Value, "CDATA"})
 			}
 		case xml.EndElement:
