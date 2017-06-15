@@ -89,6 +89,8 @@ func TestInvalidXML(t *testing.T) {
 		`hai<e1/>`,                                     // text outside root element
 		`<e a="v" a="v"/>`,                             // duplicate attribute
 		`<e xmlns:x="x" xmlns:y="x" x:a="v" y:a="v"/>`, // duplicate attribute
+		`<e xmlns="x" xmlns="y"/>`,                     // duplicate namespace
+		`<e xmlns:x="x" xmlns:x="y"/>`,                 // duplicate namespace
 		`<!--comment--xyz--><e1/>`,                     // "--" not allowed in comments
 	}
 

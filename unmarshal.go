@@ -44,8 +44,14 @@ func Unmarshal(decoder *xml.Decoder) (*Document, error) {
 					if a.Value == "" {
 						return nil, errors.New("empty namespace is not allowed")
 					}
+					if _, ok := elem.NSDecl[a.Name.Local]; ok {
+						return nil, fmt.Errorf("duplicate namespace attribute xmlns:%s", a.Name.Local)
+					}
 					elem.declareNS(a.Name.Local, a.Value)
 				} else if a.Name.Space == "" && a.Name.Local == "xmlns" {
+					if _, ok := elem.NSDecl[""]; ok {
+						return nil, errors.New("duplicate namespace attribute xmlns")
+					}
 					elem.declareNS("", a.Value)
 				}
 			}
