@@ -15,21 +15,22 @@ import (
 // Unmarshal reads tokens from decoder and constructs
 // Document object.
 func Unmarshal(decoder *xml.Decoder) (*Document, error) {
-	d := new(Document)
-	var cur Parent = d
+	doc := new(Document)
+	var cur Parent = doc
 	var elem *Element
 	for {
 		t, err := decoder.RawToken()
-		if err == io.EOF {
-			switch {
-			case elem != nil:
-				return nil, fmt.Errorf("expected </%s>", elem.Name)
-			case d.RootElement() == nil:
-				return nil, errors.New("document is empty")
+		if err != nil {
+			if err == io.EOF {
+				switch {
+				case elem != nil:
+					return nil, fmt.Errorf("expected </%s>", elem.Name)
+				case doc.RootElement() == nil:
+					return nil, errors.New("document is empty")
+				}
+				return doc, nil
 			}
-			return d, nil
-		} else if err != nil {
-			return d, err
+			return doc, err
 		}
 		switch t := t.(type) {
 		case xml.StartElement:
@@ -48,9 +49,8 @@ func Unmarshal(decoder *xml.Decoder) (*Document, error) {
 					elem.declareNS("", a.Value)
 				}
 			}
-			elem.Name = translate(elem, t.Name)
-			if elem.Name == nil {
-				return nil, errors.New("unresolved prefix: " + t.Name.Space)
+			if elem.Name, err = translate(elem, t.Name); err != nil {
+				return nil, err
 			}
 			for _, a := range t.Attr {
 				if a.Name.Space == "xmlns" || (a.Name.Space == "" && a.Name.Local == "xmlns") {
@@ -59,11 +59,8 @@ func Unmarshal(decoder *xml.Decoder) (*Document, error) {
 				var name *Name
 				if a.Name.Space == "" {
 					name = &Name{"", "", a.Name.Local}
-				} else {
-					name = translate(elem, a.Name)
-					if name == nil {
-						return nil, errors.New("unresolved prefix: " + a.Name.Space)
-					}
+				} else if name, err = translate(elem, a.Name); err != nil {
+					return nil, err
 				}
 				elem.Attrs = append(elem.Attrs, &Attr{elem, name, a.Value, "CDATA"})
 			}
@@ -93,7 +90,7 @@ func Unmarshal(decoder *xml.Decoder) (*Document, error) {
 		case xml.Comment:
 			_ = cur.Append(&Comment{Data: string(t)})
 		case xml.ProcInst:
-			if cur == d && t.Target == "xml" {
+			if cur == doc && t.Target == "xml" {
 				break // don't add xml declaration to document
 			}
 			_ = cur.Append(&ProcInst{Target: t.Target, Data: string(t.Inst)})
@@ -101,9 +98,9 @@ func Unmarshal(decoder *xml.Decoder) (*Document, error) {
 	}
 }
 
-func translate(e *Element, name xml.Name) *Name {
+func translate(e *Element, name xml.Name) (*Name, error) {
 	if uri, ok := e.ResolvePrefix(name.Space); ok {
-		return &Name{uri, name.Space, name.Local}
+		return &Name{uri, name.Space, name.Local}, nil
 	}
-	return nil
+	return nil, errors.New("unresolved prefix: " + name.Space)
 }
